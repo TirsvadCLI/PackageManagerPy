@@ -1,4 +1,5 @@
-[![Build Status](https://travis-ci.com/Tirsvad-CLI-Tools/Package-Manager.svg?branch=main)](https://travis-ci.com/Tirsvad-CLI-Tools/Package-Manager)
+[![Build Status](https://travis-ci.com/TirsvadCLI-Tools/Package-Manager.svg?branch=main)](https://travis-ci.com/TirsvadCLI-Tools/Package-Manager)
+[![Coverage Status](https://coveralls.io/repos/github/TirsvadCLI-Tools/PackageManager/badge.svg)](https://coveralls.io/github/TirsvadCLI-Tools/PackageManager)
 # Package Manager
 
 ## Conventions
