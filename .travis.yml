@@ -16,3 +16,4 @@ script:
 after_success:
   - coverage run --branch --source=src/ -m pytest tests/
   - bash <(curl -s https://codecov.io/bash)
+  - coveralls
