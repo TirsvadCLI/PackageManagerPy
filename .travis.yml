@@ -1,0 +1,19 @@
+dist: xenial
+language: python
+sudo: required
+python:
+  - '3.6'
+  - '3.7'
+  - '3.8'
+before_install:
+  - python --version
+  - pip3 install -U pip
+  - pip3 install -U pytest
+  - pip3 install pytest-cov
+  - pip3 install codecov
+install:
+  - pip install -e .
+script:
+  - pytest --cov=./src
+after_success:
+  - codecov
