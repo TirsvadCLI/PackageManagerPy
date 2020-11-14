@@ -31,11 +31,12 @@ setup(
         'distro',
     ],
     extras_require = {
-        "dev": [
-            "pytest>=3.7",
-        ],
         'test': [
-            'coverage',            
+            'coverage',
+            'pytest',
+            'pytest-cov',
+            'overalls',
+            'PyYAML',
         ],
     },
 )
