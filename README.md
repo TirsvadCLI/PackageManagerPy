@@ -7,7 +7,7 @@
 $ - requires given linux commands to be executed as a regular non-privileged user
 
 ### Installation
-    $ pip install TirsvadCLI-PackageManager
+    $ pip install package-manager-TirsvadCLI
 
 
 ### Development
