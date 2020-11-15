@@ -7,8 +7,8 @@ with open(path.join(root_dir, 'README.md'), encoding='utf-8') as f:
     long_description = f.read()
 
 setup(
-    name="TirsvadCLI-PackageManager",
-    version="0.1",
+    name="package-manager-TirsvadCLI",
+    version="0.1.0",
     long_description=long_description,
     long_description_content_type='text/markdown',
     url="https://github.com/orgs/Tirsvad-CLI-Tools/",

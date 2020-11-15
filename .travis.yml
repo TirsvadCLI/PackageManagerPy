@@ -6,9 +6,7 @@ python:
   - '3.7'
   - '3.8'
 before_install:
-  - python --version
   - pip3 install -U pip
-  - pip3 install -U pytest
 install:
   - pip install -e .[test]
 script:

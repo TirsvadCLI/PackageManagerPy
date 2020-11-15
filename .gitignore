@@ -128,4 +128,4 @@ dmypy.json
 # Pyre type checker
 .pyre/
 
-/workspace.code-workspace
+deplay_pypi.sh
