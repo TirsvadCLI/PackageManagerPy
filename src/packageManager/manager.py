@@ -23,6 +23,10 @@ class packageManager(object):
     def _install(self, package):
         if(self._packageManager=='apt'):
             proc = subprocess.Popen('DEBIAN_FRONTEND=noninteractive apt-get install -qq '+package, shell=True, stdin=None, stdout=open(os.devnull,"wb"), stderr=subprocess.STDOUT, executable="/bin/bash")
+        elif (self._packageManager=='dnf'):
+            proc = subprocess.Popen('dnf --assumeyes --quiet install '+package, shell=True, stdin=None, stdout=open(os.devnull,"wb"), stderr=subprocess.STDOUT, executable="/bin/bash")
+        elif (self._packageManager=='yum'):
+            proc = subprocess.Popen('yum install '+package, shell=True, stdin=None, stdout=open(os.devnull,"wb"), stderr=subprocess.STDOUT, executable="/bin/bash")
         if (not proc.wait()):
             self._log.error('Install failed for package '+package)
 
@@ -36,7 +40,7 @@ class packageManager(object):
         if(self._packageManager=='apt'):
             proc = subprocess.Popen('DEBIAN_FRONTEND=noninteractive apt-get update -qq ', shell=True, stdin=None, stdout=open(os.devnull,"wb"), stderr=subprocess.STDOUT, executable="/bin/bash")
         elif (self._packageManager=='dnf'):
-            proc = subprocess.Popen('dnf upgrade --refresh', shell=True, stdin=None, stdout=open(os.devnull,"wb"), stderr=subprocess.STDOUT, executable="/bin/bash")
+            proc = subprocess.Popen('dnf  --assumeyes --quiet  upgrade --refresh', shell=True, stdin=None, stdout=open(os.devnull,"wb"), stderr=subprocess.STDOUT, executable="/bin/bash")
         elif (self._packageManager=='yum'):
             proc = subprocess.Popen('yum update', shell=True, stdin=None, stdout=open(os.devnull,"wb"), stderr=subprocess.STDOUT, executable="/bin/bash")
 
@@ -47,12 +51,21 @@ class packageManager(object):
         if(self._packageManager=='apt'):
             proc = subprocess.Popen('DEBIAN_FRONTEND=noninteractive apt-get upgrade -qq ', shell=True, stdin=None, stdout=open(os.devnull,"wb"), stderr=subprocess.STDOUT, executable="/bin/bash")
         elif (self._packageManager=='dnf'):
-            proc = subprocess.Popen('dnf upgrade', shell=True, stdin=None, stdout=open(os.devnull,"wb"), stderr=subprocess.STDOUT, executable="/bin/bash")
+            proc = subprocess.Popen('dnf  --assumeyes --quiet  upgrade', shell=True, stdin=None, stdout=open(os.devnull,"wb"), stderr=subprocess.STDOUT, executable="/bin/bash")
         elif (self._packageManager=='yum'):
             proc = subprocess.Popen('yum upgrade', shell=True, stdin=None, stdout=open(os.devnull,"wb"), stderr=subprocess.STDOUT, executable="/bin/bash")
 
         if (not proc.wait()):
             self._log.error('System upgrade failed ')
+
+    def system_upgrade(self):
+        self.update()
+        if (self._packageManager=='dnf'):
+            self.install('dnf-plugin-system-upgrade')
+            proc = subprocess.Popen('dnf system-upgrade', shell=True, stdin=None, stdout=open(os.devnull,"wb"), stderr=subprocess.STDOUT, executable="/bin/bash")
+            if (not proc.wait()):
+                self._log.error('System upgrade failed ')
+        self.upgrade()
 
 if __name__ == "__main__":
 	pass
