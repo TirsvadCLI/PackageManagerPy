@@ -31,20 +31,20 @@ class packageManager(object):
             self._log.error('Install failed for package '+package)
 
     def install(self, packages):
-        if isinstance(packages,str):
+        if isinstance(packages, str):
             self._install(packages)
         for p in packages:
             self._install(p)
 
     def update(self):
         if(self._packageManager=='apt'):
-            proc = subprocess.Popen('DEBIAN_FRONTEND=noninteractive apt-get update -qq ', shell=True, stdin=None, stdout=open(os.devnull,"wb"), stderr=subprocess.STDOUT, executable="/bin/bash")
+            proc = subprocess.Popen('DEBIAN_FRONTEND=noninteractive apt-get update -qq', shell=True, stdin=None, stdout=open(os.devnull,"wb"), stderr=subprocess.STDOUT, executable="/bin/bash")
         elif (self._packageManager=='dnf'):
             proc = subprocess.Popen('dnf --assumeyes --quiet  upgrade --refresh', shell=True, stdin=None, stdout=open(os.devnull,"wb"), stderr=subprocess.STDOUT, executable="/bin/bash")
         elif (self._packageManager=='yum'):
             proc = subprocess.Popen('yum update', shell=True, stdin=None, stdout=open(os.devnull,"wb"), stderr=subprocess.STDOUT, executable="/bin/bash")
 
-        if (not proc.wait()):
+        if (proc.wait()):
             self._log.error('System update failed ')
 
     def upgrade(self):
@@ -55,7 +55,7 @@ class packageManager(object):
         elif (self._packageManager=='yum'):
             proc = subprocess.Popen('yum upgrade', shell=True, stdin=None, stdout=open(os.devnull,"wb"), stderr=subprocess.STDOUT, executable="/bin/bash")
 
-        if (not proc.wait()):
+        if (proc.wait()):
             self._log.error('System upgrade failed ')
 
     def system_upgrade(self):
@@ -63,7 +63,7 @@ class packageManager(object):
         if (self._packageManager=='dnf'):
             self.install('dnf-plugin-system-upgrade')
             proc = subprocess.Popen('dnf system-upgrade', shell=True, stdin=None, stdout=open(os.devnull,"wb"), stderr=subprocess.STDOUT, executable="/bin/bash")
-            if (not proc.wait()):
+            if (proc.wait()):
                 self._log.error('System upgrade failed ')
         self.upgrade()
 
