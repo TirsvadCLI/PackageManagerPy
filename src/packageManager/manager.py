@@ -13,7 +13,7 @@ class packageManager(object):
         if (self._distro[0] in ('debian', 'ubuntu')):
             self._packageManager = "apt"
         elif (self._distro[0] in ('fedora', 'cenots')):
-            if (self._distro[0] == 'Fedora') and ( int(self._distro[1]) >= 22 ):
+            if (self._distro[0] == 'fedora') and ( int(self._distro[1]) >= 22 ):
                 self._packageManager = "dnf"
             else:
                 self._packageManager = 'yum'
@@ -40,7 +40,7 @@ class packageManager(object):
         if(self._packageManager=='apt'):
             proc = subprocess.Popen('DEBIAN_FRONTEND=noninteractive apt-get update -qq ', shell=True, stdin=None, stdout=open(os.devnull,"wb"), stderr=subprocess.STDOUT, executable="/bin/bash")
         elif (self._packageManager=='dnf'):
-            proc = subprocess.Popen('dnf  --assumeyes --quiet  upgrade --refresh', shell=True, stdin=None, stdout=open(os.devnull,"wb"), stderr=subprocess.STDOUT, executable="/bin/bash")
+            proc = subprocess.Popen('dnf --assumeyes --quiet  upgrade --refresh', shell=True, stdin=None, stdout=open(os.devnull,"wb"), stderr=subprocess.STDOUT, executable="/bin/bash")
         elif (self._packageManager=='yum'):
             proc = subprocess.Popen('yum update', shell=True, stdin=None, stdout=open(os.devnull,"wb"), stderr=subprocess.STDOUT, executable="/bin/bash")
 
