@@ -8,7 +8,7 @@ with open(path.join(root_dir, 'README.md'), encoding='utf-8') as f:
 
 setup(
     name="package-manager-TirsvadCLI",
-    version="0.1.4",
+    version="0.1.5",
     long_description=long_description,
     long_description_content_type='text/markdown',
     url="https://github.com/orgs/Tirsvad-CLI-Tools/",
@@ -29,6 +29,9 @@ setup(
     python_requires='>=3.6, <4',
     install_requires=[
         'distro',
+        'logging',
+        'subprocess',
+        'os',
     ],
     extras_require = {
         'test': [

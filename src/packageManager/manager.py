@@ -4,11 +4,12 @@ import os
 import subprocess
 
 class packageManager(object):
-    _log = logging.getLogger(__name__)
+    _log = object
     _distro: tuple
     _packageManager: str
 
     def __init__(self):
+        self._log = logging.getLogger(__name__)
         self._distro = distro.linux_distribution(full_distribution_name=False)
         if (self._distro[0] in ('debian', 'ubuntu')):
             self._packageManager = "apt"
@@ -22,13 +23,15 @@ class packageManager(object):
 
     def _install(self, package):
         if(self._packageManager=='apt'):
-            proc = subprocess.Popen('DEBIAN_FRONTEND=noninteractive apt-get install -qq '+package, shell=True, stdin=None, stdout=open(os.devnull,"wb"), stderr=subprocess.STDOUT, executable="/bin/bash")
+            process = subprocess.Popen('DEBIAN_FRONTEND=noninteractive apt-get install -qq '+package, shell=True, stdin=None, stdout=open(os.devnull,"wb"), stderr=subprocess.STDOUT, executable="/bin/bash")
         elif (self._packageManager=='dnf'):
-            proc = subprocess.Popen('dnf --assumeyes --quiet install '+package, shell=True, stdin=None, stdout=open(os.devnull,"wb"), stderr=subprocess.STDOUT, executable="/bin/bash")
+            process = subprocess.Popen('dnf --assumeyes --quiet install '+package, shell=True, stdin=None, stdout=open(os.devnull,"wb"), stderr=subprocess.STDOUT, executable="/bin/bash")
         elif (self._packageManager=='yum'):
-            proc = subprocess.Popen('yum install '+package, shell=True, stdin=None, stdout=open(os.devnull,"wb"), stderr=subprocess.STDOUT, executable="/bin/bash")
-        if (not proc.wait()):
+            process = subprocess.Popen('yum install '+package, shell=True, stdin=None, stdout=open(os.devnull,"wb"), stderr=subprocess.STDOUT, executable="/bin/bash")
+        if (process.wait()):
             self._log.error('Install failed for package '+package)
+        else:
+            self._log.debug('Installed package '+package)
 
     def install(self, packages):
         if isinstance(packages, str):
@@ -38,34 +41,32 @@ class packageManager(object):
 
     def update(self):
         if(self._packageManager=='apt'):
-            proc = subprocess.Popen('DEBIAN_FRONTEND=noninteractive apt-get update -qq', shell=True, stdin=None, stdout=open(os.devnull,"wb"), stderr=subprocess.STDOUT, executable="/bin/bash")
+            process = subprocess.Popen('DEBIAN_FRONTEND=noninteractive apt-get update -qq', shell=True, stdin=None, stdout=open(os.devnull,"wb"), stderr=subprocess.STDOUT, executable="/bin/bash")
         elif (self._packageManager=='dnf'):
-            proc = subprocess.Popen('dnf --assumeyes --quiet  upgrade --refresh', shell=True, stdin=None, stdout=open(os.devnull,"wb"), stderr=subprocess.STDOUT, executable="/bin/bash")
+            process = subprocess.Popen('dnf --assumeyes --quiet  upgrade --refresh', shell=True, stdin=None, stdout=open(os.devnull,"wb"), stderr=subprocess.STDOUT, executable="/bin/bash")
         elif (self._packageManager=='yum'):
-            proc = subprocess.Popen('yum update', shell=True, stdin=None, stdout=open(os.devnull,"wb"), stderr=subprocess.STDOUT, executable="/bin/bash")
-
-        if (proc.wait()):
+            process = subprocess.Popen('yum update', shell=True, stdin=None, stdout=open(os.devnull,"wb"), stderr=subprocess.STDOUT, executable="/bin/bash")
+        if (process.wait()):
             self._log.error('System update failed ')
 
     def upgrade(self):
         if(self._packageManager=='apt'):
-            proc = subprocess.Popen('DEBIAN_FRONTEND=noninteractive apt-get upgrade -qq ', shell=True, stdin=None, stdout=open(os.devnull,"wb"), stderr=subprocess.STDOUT, executable="/bin/bash")
+            process = subprocess.Popen('DEBIAN_FRONTEND=noninteractive apt-get upgrade -qq ', shell=True, stdin=None, stdout=open(os.devnull,"wb"), stderr=subprocess.STDOUT, executable="/bin/bash")
         elif (self._packageManager=='dnf'):
-            proc = subprocess.Popen('dnf  --assumeyes --quiet  upgrade', shell=True, stdin=None, stdout=open(os.devnull,"wb"), stderr=subprocess.STDOUT, executable="/bin/bash")
+            process = subprocess.Popen('dnf  --assumeyes --quiet  upgrade', shell=True, stdin=None, stdout=open(os.devnull,"wb"), stderr=subprocess.STDOUT, executable="/bin/bash")
         elif (self._packageManager=='yum'):
-            proc = subprocess.Popen('yum upgrade', shell=True, stdin=None, stdout=open(os.devnull,"wb"), stderr=subprocess.STDOUT, executable="/bin/bash")
-
-        if (proc.wait()):
+            process = subprocess.Popen('yum upgrade', shell=True, stdin=None, stdout=open(os.devnull,"wb"), stderr=subprocess.STDOUT, executable="/bin/bash")
+        if (process.wait()):
             self._log.error('System upgrade failed ')
 
     def system_upgrade(self):
         self.update()
         if (self._packageManager=='dnf'):
             self.install('dnf-plugin-system-upgrade')
-            proc = subprocess.Popen('dnf system-upgrade', shell=True, stdin=None, stdout=open(os.devnull,"wb"), stderr=subprocess.STDOUT, executable="/bin/bash")
-            if (proc.wait()):
+            process = subprocess.Popen('dnf system-upgrade', shell=True, stdin=None, stdout=open(os.devnull,"wb"), stderr=subprocess.STDOUT, executable="/bin/bash")
+            if (process.wait()):
                 self._log.error('System upgrade failed ')
         self.upgrade()
 
 if __name__ == "__main__":
-	pass
+    exit('Cannot be run directly')
