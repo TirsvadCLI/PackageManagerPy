@@ -29,9 +29,6 @@ setup(
     python_requires='>=3.6, <4',
     install_requires=[
         'distro',
-        'logging',
-        'subprocess',
-        'os',
     ],
     extras_require = {
         'test': [
