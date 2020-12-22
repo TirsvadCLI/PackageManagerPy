@@ -8,9 +8,12 @@ python:
 before_install:
   - pip3 install -U pip
 install:
+  - pip install pytest
+  - pip install codecov
+  - pip install pytest-cov
   - pip install -e .[test]
 script:
-  - pytest --cov=./src
+  - pytest --cov-report term --cov=./src
 after_success:
   - coverage run --branch --source=src/ -m pytest tests/
   - bash <(curl -s https://codecov.io/bash)
