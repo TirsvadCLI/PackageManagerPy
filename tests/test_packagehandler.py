@@ -2,9 +2,17 @@ import pytest
 
 from packageManager.manager import packageManager
 
-def test_install():
-    App = packageManager()
-    App.update()
-    App.upgrade()
-    App.install('curl')
-    pass
+class Test():
+    _app = packageManager()
+
+    def setup_method(self, test_method):
+        pass
+
+    def teardown_method(self, test_method):
+        pass
+
+    def test_update_os(self):
+        self._app.update()
+
+    def test_install(self):
+        self._app.install('ntpdate')

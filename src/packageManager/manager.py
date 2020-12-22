@@ -1,14 +1,22 @@
 import distro
 import logging
-import os
+import os, sys
 import subprocess
 
-class packageManager(object):
+class run_bash(subprocess.Popen):
+    def __init__(self, args, shell=True, stdin=None, stdout=open('/dev/null', 'wb'), stderr=open(os.devnull,"wb"), executable='/bin/bash', cwd=None):
+        subprocess.Popen.__init__(self, args=args, shell=shell, stdin=stdin, stdout=stdout, stderr=stderr, executable=executable, cwd=cwd)
+
+class PackageNotFoundError(Exception):
+    pass
+
+class packageManager:
     _logger = logging.getLogger(__name__)
     _distro: tuple
     _packageManager: str
 
     def __init__(self):
+        # self._check_uid()
         self._distro = distro.linux_distribution(full_distribution_name=False)
         if (self._distro[0] in ('debian', 'ubuntu')):
             self._packageManager = "apt"
@@ -20,42 +28,57 @@ class packageManager(object):
         else:
             self._logger.error("Failed to detect PackageManager for OS " + self._distro[0] + " " + self._distro[1])
 
+    def _check_uid(self):
+        if not (os.geteuid() == 0):
+            if not 'SUDO_UID' in os.environ.keys():
+                self._logger.critical("This program requires super user priv.")
+                sys.exit(1)
+
     def _install(self, package):
-        if(self._packageManager=='apt'):
-            process = subprocess.Popen('DEBIAN_FRONTEND=noninteractive apt-get install -qq ' + package, shell=True, stdin=None, stdout=open(os.devnull,"wb"), stderr=subprocess.STDOUT, executable="/bin/bash")
-        elif (self._packageManager=='dnf'):
-            process = subprocess.Popen('dnf --assumeyes --quiet install ' + package, shell=True, stdin=None, stdout=open(os.devnull,"wb"), stderr=subprocess.STDOUT, executable="/bin/bash")
-        elif (self._packageManager=='yum'):
-            process = subprocess.Popen('yum install ' + package, shell=True, stdin=None, stdout=open(os.devnull,"wb"), stderr=subprocess.STDOUT, executable="/bin/bash")
-        process.communicate()[0]
-        if (process.returncode):
-            self._logger.error('Install failed for package ' + package)
+        from shutil import which
+        if which(package) is None:
+            if(self._packageManager=='apt'):
+                process = run_bash('DEBIAN_FRONTEND=noninteractive apt-get install -qq ' + package)
+            elif (self._packageManager=='dnf'):
+                process = subprocess.Popen('dnf --assumeyes --quiet install ' + package)
+            elif (self._packageManager=='yum'):
+                process = subprocess.Popen('yum install ' + package)
+            process.communicate()[0]
+            if (process.returncode):
+                self._logger.critical('Install failed for package ' + package)
+                raise PackageNotFoundError('Install failed for package ' + package)
+            else:
+                self._logger.info('Installed package ' + package)
         else:
-            self._logger.info('Installed package ' + package)
+            self._logger.info('Package ' + package + ' allready exists ')
 
     def install(self, packages):
         if isinstance(packages, str):
             self._install(packages)
-        for p in packages:
-            self._install(p)
+        elif isinstance(packages, list):
+            for p in packages:
+                self._install(p)
+        else:
+            self._logger.error('Argument type is not string or list. No install!')
+            raise TypeError('Argument type is not string or list. No install!')
 
     def update(self):
         if(self._packageManager=='apt'):
-            process = subprocess.Popen('DEBIAN_FRONTEND=noninteractive apt-get update -qq', shell=True, stdin=None, stdout=open(os.devnull,"wb"), stderr=subprocess.STDOUT, executable="/bin/bash")
+            process = subprocess.Popen('DEBIAN_FRONTEND=noninteractive apt-get update -qq')
         elif (self._packageManager=='dnf'):
-            process = subprocess.Popen('dnf --assumeyes --quiet  upgrade --refresh', shell=True, stdin=None, stdout=open(os.devnull,"wb"), stderr=subprocess.STDOUT, executable="/bin/bash")
+            process = subprocess.Popen('dnf --assumeyes --quiet  upgrade --refresh')
         elif (self._packageManager=='yum'):
-            process = subprocess.Popen('yum update', shell=True, stdin=None, stdout=open(os.devnull,"wb"), stderr=subprocess.STDOUT, executable="/bin/bash")
+            process = subprocess.Popen('yum update')
         if (process.wait()):
             self._logger.error('System update failed ')
 
     def upgrade(self):
         if(self._packageManager=='apt'):
-            process = subprocess.Popen('DEBIAN_FRONTEND=noninteractive apt-get upgrade -qq ', shell=True, stdin=None, stdout=open(os.devnull,"wb"), stderr=subprocess.STDOUT, executable="/bin/bash")
+            process = subprocess.Popen('DEBIAN_FRONTEND=noninteractive apt-get upgrade -qq ')
         elif (self._packageManager=='dnf'):
-            process = subprocess.Popen('dnf  --assumeyes --quiet  upgrade', shell=True, stdin=None, stdout=open(os.devnull,"wb"), stderr=subprocess.STDOUT, executable="/bin/bash")
+            process = subprocess.Popen('dnf  --assumeyes --quiet  upgrade')
         elif (self._packageManager=='yum'):
-            process = subprocess.Popen('yum upgrade', shell=True, stdin=None, stdout=open(os.devnull,"wb"), stderr=subprocess.STDOUT, executable="/bin/bash")
+            process = subprocess.Popen('yum upgrade')
         if (process.wait()):
             self._logger.error('System upgrade failed ')
 
@@ -63,7 +86,7 @@ class packageManager(object):
         self.update()
         if (self._packageManager=='dnf'):
             self.install('dnf-plugin-system-upgrade')
-            process = subprocess.Popen('dnf system-upgrade', shell=True, stdin=None, stdout=open(os.devnull,"wb"), stderr=subprocess.STDOUT, executable="/bin/bash")
+            process = subprocess.Popen('dnf system-upgrade')
             if (process.wait()):
                 self._logger.error('System upgrade failed ')
         self.upgrade()
