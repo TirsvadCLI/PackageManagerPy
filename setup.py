@@ -35,7 +35,7 @@ setup(
             'coverage',
             'pytest',
             'pytest-cov',
-            'overalls',
+            'coveralls',
             'PyYAML',
         ],
     },
