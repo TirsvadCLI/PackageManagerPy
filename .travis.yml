@@ -8,10 +8,8 @@ python:
 before_install:
   - pip3 install -U pip
 install:
-  - pip install pytest
-  - pip install codecov
-  - pip install pytest-cov
   - pip install -e .[test]
+  - apt-get install -y ruby-coveralls
 script:
   - pytest --cov-report term --cov=./src
 after_success:
