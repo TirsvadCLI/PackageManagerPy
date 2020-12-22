@@ -40,9 +40,9 @@ class packageManager:
             if(self._packageManager=='apt'):
                 process = run_bash('DEBIAN_FRONTEND=noninteractive apt-get install -qq ' + package)
             elif (self._packageManager=='dnf'):
-                process = subprocess.Popen('dnf --assumeyes --quiet install ' + package)
+                process = run_bash('dnf --assumeyes --quiet install ' + package)
             elif (self._packageManager=='yum'):
-                process = subprocess.Popen('yum install ' + package)
+                process = run_bash('yum install ' + package)
             process.communicate()[0]
             if (process.returncode):
                 self._logger.critical('Install failed for package ' + package)
@@ -64,21 +64,22 @@ class packageManager:
 
     def update(self):
         if(self._packageManager=='apt'):
-            process = subprocess.Popen('DEBIAN_FRONTEND=noninteractive apt-get update -qq')
+            process = run_bash('DEBIAN_FRONTEND=noninteractive apt-get update')
         elif (self._packageManager=='dnf'):
-            process = subprocess.Popen('dnf --assumeyes --quiet  upgrade --refresh')
+            process = run_bash('dnf --assumeyes --quiet  upgrade --refresh')
         elif (self._packageManager=='yum'):
-            process = subprocess.Popen('yum update')
-        if (process.wait()):
-            self._logger.error('System update failed ')
+            process = run_bash('yum update')
+        process.communicate()[0]
+        # if (process.wait()):
+        #     self._logger.error('System update failed ')
 
     def upgrade(self):
         if(self._packageManager=='apt'):
-            process = subprocess.Popen('DEBIAN_FRONTEND=noninteractive apt-get upgrade -qq ')
+            process = run_bash('DEBIAN_FRONTEND=noninteractive apt-get upgrade -qq ')
         elif (self._packageManager=='dnf'):
-            process = subprocess.Popen('dnf  --assumeyes --quiet  upgrade')
+            process = run_bash('dnf  --assumeyes --quiet  upgrade')
         elif (self._packageManager=='yum'):
-            process = subprocess.Popen('yum upgrade')
+            process = run_bash('yum upgrade')
         if (process.wait()):
             self._logger.error('System upgrade failed ')
 
@@ -86,7 +87,7 @@ class packageManager:
         self.update()
         if (self._packageManager=='dnf'):
             self.install('dnf-plugin-system-upgrade')
-            process = subprocess.Popen('dnf system-upgrade')
+            process = run_bash('dnf system-upgrade')
             if (process.wait()):
                 self._logger.error('System upgrade failed ')
         self.upgrade()
