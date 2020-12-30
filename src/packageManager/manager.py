@@ -10,13 +10,16 @@ class run_bash(subprocess.Popen):
 class PackageNotFoundError(Exception):
     pass
 
+class CredentialNotRootOrSudoError(Exception):
+    pass
+
 class packageManager:
     _logger = logging.getLogger(__name__)
     _distro: tuple
     _packageManager: str
 
     def __init__(self):
-        # self._check_uid()
+        self._check_uid()
         self._distro = distro.linux_distribution(full_distribution_name=False)
         if (self._distro[0] in ('debian', 'ubuntu')):
             self._packageManager = "apt"
@@ -31,8 +34,7 @@ class packageManager:
     def _check_uid(self):
         if not (os.geteuid() == 0):
             if not 'SUDO_UID' in os.environ.keys():
-                self._logger.critical("This program requires super user priv.")
-                sys.exit(1)
+                raise CredentialNotRootOrSudoError("This program requires super user priv.")
 
     def _install(self, package):
         from shutil import which
@@ -70,8 +72,6 @@ class packageManager:
         elif (self._packageManager=='yum'):
             process = run_bash('yum update')
         process.communicate()[0]
-        # if (process.wait()):
-        #     self._logger.error('System update failed ')
 
     def upgrade(self):
         if(self._packageManager=='apt'):

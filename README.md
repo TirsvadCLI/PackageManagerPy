@@ -12,12 +12,12 @@ $ - requires given linux commands to be executed as a regular non-privileged use
 
 ### Installation
 
-    $ pip install package-manager-TirsvadCLI
+  $ pip install package-manager-TirsvadCLI
 
 ### TODO
 
 * Package install
-    * Add support for fedora and centos
+  * Add support for fedora and centos
 
 ### Development
 
