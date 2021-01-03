@@ -1,52 +1,28 @@
-script:
-  - ./build $TRAVIS_OS_NAME
+language: python
+python:
+- 3.6
+- 3.7
+- 3.8
+
 jobs:
   include:
-    - stage: build
-      os: linux
-      workspaces:
-        create:
-          name: shared
-    - stage: python
-      dist: xenial
-      language: python
-      sudo: required
-      python:
-        - '3.6'
-        - '3.7'
-        - '3.8'
-      workspaces:
-        use: shared
-        before_install:
-          - pip3 install -U pip
-        install:
-          - pip install -e .[test]
-        script:
-          - pytest --cov-report term --cov=./src
-        after_success:
-          - coverage run --branch --source=src/ -m pytest tests/
-          - bash <(curl -s https://codecov.io/bash)
-          - coveralls
+  - {}
+    before_install:
+    - sudo -E env "PATH=$PATH" pip3 install -U pip
+    install:
+    - sudo -E env "PATH=$PATH" pip install -e .[test]
+    script:
+    - sudo -E env "PATH=$PATH" pytest --cov=./src
+    - bash <(curl -s https://codecov.io/bash) -cF python
+  - name: "python 3.6 [Job failure permitted]"
+    python: 3.6
+    before_install:
+    - pip3 install -U pip
+    install:
+    - pip install -e .[test]
+    script:
+    - pytest --cov=./src
+    - bash <(curl -s https://codecov.io/bash) -cF python
+  allow_failures:
+  - name: "python 3.6 [Job failure permitted]"
 
-
-
-
-
-
-dist: xenial
-language: python
-sudo: required
-python:
-  - '3.6'
-  - '3.7'
-  - '3.8'
-before_install:
-  - pip3 install -U pip
-install:
-  - pip install -e .[test]
-script:
-  - pytest --cov-report term --cov=./src
-after_success:
-  - coverage run --branch --source=src/ -m pytest tests/
-  - bash <(curl -s https://codecov.io/bash)
-  - coveralls
