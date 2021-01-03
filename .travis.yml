@@ -1,12 +1,24 @@
 language: python
-python:
-  - 3.6
-  - 3.7
-  - 3.8
 
 jobs:
   include:
-    - {}
+    - python: 3.6
+      before_install:
+      - sudo -E env "PATH=$PATH" pip3 install -U pip
+      install:
+      - sudo -E env "PATH=$PATH" pip install -e .[test]
+      script:
+      - sudo -E env "PATH=$PATH" pytest --cov=./src
+      - bash <(curl -s https://codecov.io/bash) -cF python
+    - python: 3.7
+      before_install:
+      - sudo -E env "PATH=$PATH" pip3 install -U pip
+      install:
+      - sudo -E env "PATH=$PATH" pip install -e .[test]
+      script:
+      - sudo -E env "PATH=$PATH" pytest --cov=./src
+      - bash <(curl -s https://codecov.io/bash) -cF python
+    - python: 3.8
       before_install:
       - sudo -E env "PATH=$PATH" pip3 install -U pip
       install:
