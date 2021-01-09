@@ -1,5 +1,8 @@
 language: python
 
+notifications:
+  webhooks: https://coveralls.io/webhook
+
 jobs:
   include:
     - python: 3.6
@@ -38,3 +41,5 @@ jobs:
   allow_failures:
     - name: "python 3.6 [Job failure permitted]"
 
+after_success:
+  - coveralls

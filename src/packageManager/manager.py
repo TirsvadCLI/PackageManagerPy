@@ -37,22 +37,24 @@ class packageManager:
                 raise CredentialNotRootOrSudoError("This program requires super user priv.")
 
     def _install(self, package):
-        from shutil import which
-        if which(package) is None:
-            if(self._packageManager=='apt'):
-                process = run_bash('DEBIAN_FRONTEND=noninteractive apt-get install -qq ' + package)
-            elif (self._packageManager=='dnf'):
-                process = run_bash('dnf --assumeyes --quiet install ' + package)
-            elif (self._packageManager=='yum'):
-                process = run_bash('yum install ' + package)
+        if(self._packageManager=='apt'):
+            process = run_bash('dpkg -s ' + package)
             process.communicate()[0]
             if (process.returncode):
-                self._logger.critical('Install failed for package ' + package)
-                raise PackageNotFoundError('Install failed for package ' + package)
+                process = run_bash('DEBIAN_FRONTEND=noninteractive apt-get install ' + package)
             else:
-                self._logger.info('Installed package ' + package)
+                self._logger.warning('Already installed ' + package)
+                return
+        elif (self._packageManager=='dnf'):
+            process = run_bash('dnf --assumeyes --quiet install ' + package)
+        elif (self._packageManager=='yum'):
+            process = run_bash('yum install ' + package)
+        process.communicate()[0]
+        if process.returncode != 0:
+            self._logger.critical('Install failed for package ' + package)
+            raise PackageNotFoundError('Install failed for package ' + package + 'code ' + str(process.returncode))
         else:
-            self._logger.info('Package ' + package + ' allready exists ')
+            self._logger.info('Installed package ' + package)
 
     def install(self, packages):
         if isinstance(packages, str):
