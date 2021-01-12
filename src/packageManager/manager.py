@@ -4,7 +4,7 @@ import os, sys
 import subprocess
 
 class run_bash(subprocess.Popen):
-    def __init__(self, args, shell=True, stdin=None, stdout=open('/dev/null', 'wb'), stderr=open(os.devnull,"wb"), executable='/bin/bash', cwd=None):
+    def __init__(self, args, shell=True, stdin=None, stdout=open('/var/log/packageManager.log', 'wb'), stderr=subprocess.STDOUT, executable='/bin/bash', cwd=None):
         subprocess.Popen.__init__(self, args=args, shell=shell, stdin=stdin, stdout=stdout, stderr=stderr, executable=executable, cwd=cwd)
 
 class PackageNotFoundError(Exception):
@@ -41,7 +41,7 @@ class packageManager:
             process = run_bash('dpkg -s ' + package)
             process.communicate()[0]
             if (process.returncode):
-                process = run_bash('DEBIAN_FRONTEND=noninteractive apt-get install ' + package)
+                process = run_bash('DEBIAN_FRONTEND=noninteractive apt-get -qq install ' + package)
             else:
                 self._logger.warning('Already installed ' + package)
                 return
