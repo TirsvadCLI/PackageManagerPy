@@ -37,6 +37,7 @@ class packageManager:
                 raise CredentialNotRootOrSudoError("This program requires super user priv.")
 
     def _install(self, package):
+        self._logger.info('Installing package ' + package)
         if(self._packageManager=='apt'):
             process = run_bash('dpkg -s ' + package)
             process.communicate()[0]
@@ -53,8 +54,6 @@ class packageManager:
         if process.returncode != 0:
             self._logger.critical('Install failed for package ' + package)
             raise PackageNotFoundError('Install failed for package ' + package + 'code ' + str(process.returncode))
-        else:
-            self._logger.info('Installed package ' + package)
 
     def install(self, packages):
         if isinstance(packages, str):
